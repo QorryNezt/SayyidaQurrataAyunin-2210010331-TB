@@ -89,6 +89,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         btnCustomer.setFont(new java.awt.Font("Bahnschrift", 0, 24)); // NOI18N
         btnCustomer.setText("Data Pelanggan");
+        btnCustomer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCustomerActionPerformed(evt);
+            }
+        });
 
         btnSales.setFont(new java.awt.Font("Bahnschrift", 0, 24)); // NOI18N
         btnSales.setText("Data Penjualan");
@@ -134,6 +139,12 @@ public class MainFrame extends javax.swing.JFrame {
     bookForm.setVisible(true); // Show bookFrame
     this.setVisible(false); // Hide MainFrame
     }//GEN-LAST:event_btnBookActionPerformed
+
+    private void btnCustomerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCustomerActionPerformed
+        customerFrame customerForm = new customerFrame(); // Create customerFrame instance
+    customerForm.setVisible(true); // Show Customer Frame
+    this.setVisible(false); // Hide MainFrame
+    }//GEN-LAST:event_btnCustomerActionPerformed
 
     /**
      * @param args the command line arguments

@@ -4,6 +4,10 @@
  */
 package com.booksales;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Asus
@@ -15,8 +19,54 @@ public class customerFrame extends javax.swing.JFrame {
      */
     public customerFrame() {
         initComponents();
+        loadCustomersIntoTable();
+        addTableSelectionListener();
     }
 
+     private void loadCustomersIntoTable() {
+        try {
+            // Step 1: Define the column names for the table
+            String[] columnNames = {"Customer ID", "Name", "Email", "Phone"};
+
+            // Step 2: Create a DefaultTableModel with the column names
+            DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+            // Step 3: Retrieve data from the database
+            List<Customer> customers = Customer.getAllCustomers();
+
+            // Step 4: Add each customer to the table model
+            for (Customer customer : customers) {
+                Object[] row = {
+                    customer.getCustomerId(),
+                    customer.getName(),
+                    customer.getEmail(),
+                    customer.getPhone()
+                };
+                model.addRow(row);
+            }
+
+            // Step 5: Set the model to the jTable
+            tbCustomer.setModel(model);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error connecting to the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void addTableSelectionListener() {
+        tbCustomer.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int selectedRow = tbCustomer.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Populate the text fields with the selected customer's data
+                    txtName.setText(tbCustomer.getValueAt(selectedRow, 1).toString());
+                    txtEmail.setText(tbCustomer.getValueAt(selectedRow, 2).toString());
+                    txtPhone.setText(tbCustomer.getValueAt(selectedRow, 3).toString());
+                }
+            }
+        });
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -30,18 +80,18 @@ public class customerFrame extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         txtClose = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jTextField1 = new javax.swing.JTextField();
-        jTextField2 = new javax.swing.JTextField();
-        jTextField3 = new javax.swing.JTextField();
+        txtName = new javax.swing.JTextField();
+        txtEmail = new javax.swing.JTextField();
+        txtPhone = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        tbCustomer = new javax.swing.JTable();
+        btnAdd = new javax.swing.JButton();
+        btnEdit = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -50,7 +100,12 @@ public class customerFrame extends javax.swing.JFrame {
         jLabel1.setText("Data Pelanggan");
 
         txtClose.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        txtClose.setText("Keluar");
+        txtClose.setText("Exit");
+        txtClose.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCloseActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -75,16 +130,16 @@ public class customerFrame extends javax.swing.JFrame {
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jTextField1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jTextField1.addActionListener(new java.awt.event.ActionListener() {
+        txtName.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        txtName.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jTextField1ActionPerformed(evt);
+                txtNameActionPerformed(evt);
             }
         });
 
-        jTextField2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        txtEmail.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
 
-        jTextField3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        txtPhone.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel2.setText("Nama Pelanggan");
@@ -95,8 +150,8 @@ public class customerFrame extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel4.setText("No.Telp Pelanggan");
 
-        jTable1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbCustomer.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        tbCustomer.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -107,19 +162,44 @@ public class customerFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tbCustomer.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbCustomerMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbCustomer);
 
-        jButton1.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jButton1.setText("Tambah");
+        btnAdd.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnAdd.setText("Tambah");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
-        jButton2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jButton2.setText("Edit");
+        btnEdit.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
-        jButton3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jButton3.setText("Hapus");
+        btnDelete.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnDelete.setText("Hapus");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
-        jButton4.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jButton4.setText("Batal");
+        btnCancel.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnCancel.setText("Batal");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -132,18 +212,18 @@ public class customerFrame extends javax.swing.JFrame {
                         .addComponent(jLabel4)
                         .addComponent(jLabel3)
                         .addComponent(jLabel2)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
-                        .addComponent(jTextField1)
-                        .addComponent(jTextField3))
+                        .addComponent(txtEmail, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                        .addComponent(txtName)
+                        .addComponent(txtPhone))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jButton3)
+                            .addComponent(btnDelete)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton4))
+                            .addComponent(btnCancel))
                         .addGroup(jPanel2Layout.createSequentialGroup()
-                            .addComponent(jButton1)
+                            .addComponent(btnAdd)
                             .addGap(18, 18, 18)
-                            .addComponent(jButton2))))
+                            .addComponent(btnEdit))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 46, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 334, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -156,23 +236,23 @@ public class customerFrame extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(12, 12, 12)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2))
+                            .addComponent(btnAdd)
+                            .addComponent(btnEdit))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton3)
-                            .addComponent(jButton4)))
+                            .addComponent(btnDelete)
+                            .addComponent(btnCancel)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 260, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(21, Short.MAX_VALUE))
         );
@@ -183,9 +263,141 @@ public class customerFrame extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
+    private void txtNameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNameActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jTextField1ActionPerformed
+    }//GEN-LAST:event_txtNameActionPerformed
+
+    private void txtCloseActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCloseActionPerformed
+        MainFrame mainForm = new MainFrame(); // Create MainFrame instance
+    mainForm.setVisible(true); // Show MainFrame
+    this.dispose(); // Close bookFrame
+    }//GEN-LAST:event_txtCloseActionPerformed
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+         // Retrieve input from text fields
+        String name = txtName.getText().trim();
+        String email = txtEmail.getText().trim();
+        String phone = txtPhone.getText().trim();
+
+        // Validate input
+        if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Create a new Customer object
+        Customer customer = new Customer();
+        customer.setName(name);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+
+        // Add the customer to the database
+        customer.addCustomer();
+
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Customer added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Clear the input fields
+        txtName.setText("");
+        txtEmail.setText("");
+        txtPhone.setText("");
+
+        // Refresh the table to show the new customer
+        loadCustomersIntoTable();
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        // Get the selected row in the table
+        int selectedRow = tbCustomer.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a customer to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get the customer ID from the selected row
+        int customerId = (int) tbCustomer.getValueAt(selectedRow, 0);
+
+        // Retrieve input from text fields
+        String name = txtName.getText().trim();
+        String email = txtEmail.getText().trim();
+        String phone = txtPhone.getText().trim();
+
+        // Validate input
+        if (name.isEmpty() || email.isEmpty() || phone.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "All fields are required!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Fetch the customer from the database
+        Customer customer = new Customer();
+        customer.setCustomerId(customerId);
+        customer.setName(name);
+        customer.setEmail(email);
+        customer.setPhone(phone);
+
+        // Update the customer in the database
+        customer.updateCustomer();
+
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Customer updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Clear the input fields
+        txtName.setText("");
+        txtEmail.setText("");
+        txtPhone.setText("");
+
+        // Refresh the table to show the updated data
+        loadCustomersIntoTable();
+    
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+        // Get the selected row in the table
+        int selectedRow = tbCustomer.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, "Please select a customer to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get the customer ID from the selected row
+        int customerId = (int) tbCustomer.getValueAt(selectedRow, 0);
+
+        // Confirm deletion
+        int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this customer?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+        if (confirm == JOptionPane.YES_OPTION) {
+            // Delete the customer
+            Customer.deleteCustomer(customerId);
+
+            // Show success message
+            JOptionPane.showMessageDialog(this, "Customer deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Refresh the table to reflect the deletion
+            loadCustomersIntoTable();
+        }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void tbCustomerMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbCustomerMouseClicked
+           // Get the selected row index
+    int selectedRow = tbCustomer.getSelectedRow();
+
+    // Ensure a row is selected
+    if (selectedRow != -1) {
+        // Retrieve data from the selected row and set it to the text fields
+        txtName.setText(tbCustomer.getValueAt(selectedRow, 1).toString());  // Title
+        txtEmail.setText(tbCustomer.getValueAt(selectedRow, 2).toString()); // Author
+        txtPhone.setText(tbCustomer.getValueAt(selectedRow, 3).toString());  // Price
+    }
+    }//GEN-LAST:event_tbCustomerMouseClicked
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+             // Deselect any selected row
+    tbCustomer.clearSelection();
+
+    // Clear all text fields
+    txtName.setText("");
+    txtEmail.setText("");
+    txtPhone.setText("");
+    }//GEN-LAST:event_btnCancelActionPerformed
 
     /**
      * @param args the command line arguments
@@ -223,10 +435,10 @@ public class customerFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEdit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -235,10 +447,10 @@ public class customerFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
-    private javax.swing.JTextField jTextField1;
-    private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
+    private javax.swing.JTable tbCustomer;
     private javax.swing.JButton txtClose;
+    private javax.swing.JTextField txtEmail;
+    private javax.swing.JTextField txtName;
+    private javax.swing.JTextField txtPhone;
     // End of variables declaration//GEN-END:variables
 }
