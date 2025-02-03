@@ -84,27 +84,28 @@ public class Book {
     }
 
     // Read: Get all books
-    public static List<Book> getAllBooks() {
-        List<Book> books = new ArrayList<>();
-        String query = "SELECT * FROM books";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                Book book = new Book(
-                    rs.getInt("book_id"),
-                    rs.getString("title"),
-                    rs.getString("author"),
-                    rs.getDouble("price"),
-                    rs.getInt("stock")
-                );
-                books.add(book);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    // In Book.java
+   public static List<Book> getAllBooks() {
+    List<Book> books = new ArrayList<>();
+    String query = "SELECT * FROM books";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query);
+         ResultSet rs = stmt.executeQuery()) {
+        while (rs.next()) {
+            Book book = new Book(
+                rs.getInt("book_id"),
+                rs.getString("title"),
+                rs.getString("author"),
+                rs.getDouble("price"),
+                rs.getInt("stock")
+            );
+            books.add(book);
         }
-        return books;
+    } catch (SQLException e) {
+        e.printStackTrace();
     }
+    return books;
+}
 
     // Read: Get a single book by ID
     public static Book getBookById(int bookId) {

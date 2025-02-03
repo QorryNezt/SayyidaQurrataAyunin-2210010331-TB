@@ -4,6 +4,10 @@
  */
 package com.booksales;
 
+import java.util.List;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author Asus
@@ -15,8 +19,42 @@ public class bookFrame extends javax.swing.JFrame {
      */
     public bookFrame() {
         initComponents();
+        loadBooksIntoTable();
     }
 
+    bookFrame(MainFrame aThis) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    private void loadBooksIntoTable() {
+    try {
+        // Step 1: Define the column names for the table
+        String[] columnNames = {"Book ID", "Title", "Author", "Price", "Stock"};
+
+        // Step 2: Create a DefaultTableModel with the column names
+        DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+
+        // Step 3: Retrieve data from the database
+        List<Book> books = Book.getAllBooks();
+
+        // Step 4: Add each book to the table model
+        for (Book book : books) {
+            Object[] row = {
+                book.getBookId(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getPrice(),
+                book.getStock()
+            };
+            model.addRow(row);
+        }
+
+        // Step 5: Set the model to the jTable
+        tbBook.setModel(model);
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Error connecting to the database: " + e.getMessage(), "Database Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -29,22 +67,22 @@ public class bookFrame extends javax.swing.JFrame {
         jSeparator1 = new javax.swing.JSeparator();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jLabel2 = new javax.swing.JLabel();
+        tbBook = new javax.swing.JTable();
+        btnEdit = new javax.swing.JButton();
+        btnDelete = new javax.swing.JButton();
+        btnCancel = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        txtIdBook = new javax.swing.JTextField();
         txtTitle = new javax.swing.JTextField();
         txtAuthor = new javax.swing.JTextField();
         txtStock = new javax.swing.JTextField();
+        txtPrice = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().add(jSeparator1, java.awt.BorderLayout.CENTER);
@@ -53,34 +91,47 @@ public class bookFrame extends javax.swing.JFrame {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Data Buku");
 
-        jButton1.setText("jButton1");
+        btnExit.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnExit.setText("Exit");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(246, Short.MAX_VALUE)
+                .addContainerGap(294, Short.MAX_VALUE)
                 .addComponent(jLabel1)
-                .addGap(239, 239, 239)
-                .addComponent(jButton1)
+                .addGap(194, 194, 194)
+                .addComponent(btnExit)
                 .addGap(20, 20, 20))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(24, 24, 24)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
+                    .addComponent(btnExit)
                     .addComponent(jLabel1))
                 .addContainerGap(18, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jButton2.setText("jButton2");
+        btnAdd.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnAdd.setText("Tambah");
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddActionPerformed(evt);
+            }
+        });
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tbBook.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        tbBook.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -91,21 +142,56 @@ public class bookFrame extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        tbBook.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tbBookMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tbBook);
 
-        jButton3.setText("jButton2");
+        btnEdit.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
-        jButton4.setText("jButton2");
+        btnDelete.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnDelete.setText("Hapus");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
-        jButton5.setText("jButton2");
+        btnCancel.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        btnCancel.setText("Batal");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
-        jLabel2.setText("ID Buku");
-
+        jLabel3.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel3.setText("Judul Buku");
 
+        jLabel4.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel4.setText("Nama Pengarang / Penulis");
 
+        jLabel5.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel5.setText("Stok Buku");
+
+        txtTitle.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+
+        txtAuthor.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+
+        txtStock.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+
+        txtPrice.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+
+        jLabel2.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        jLabel2.setText("Harga Buku");
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -114,22 +200,22 @@ public class bookFrame extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton2)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton3))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jButton4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jButton5))
-                    .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
-                    .addComponent(txtIdBook, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnAdd)
+                            .addComponent(btnDelete))
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCancel)
+                            .addComponent(btnEdit)))
+                    .addComponent(jLabel2)
+                    .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 66, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(17, 17, 17))
@@ -138,40 +224,218 @@ public class bookFrame extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(12, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel2)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtIdBook, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel3)
-                .addGap(5, 5, 5)
-                .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel4)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jLabel5)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4)
-                    .addComponent(jButton5))
-                .addGap(14, 14, 14))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 309, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                        .addGap(3, 3, 3)
+                        .addComponent(jLabel3)
+                        .addGap(5, 5, 5)
+                        .addComponent(txtTitle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtAuthor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(12, 12, 12)
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jLabel5)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtStock, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnAdd)
+                            .addComponent(btnEdit))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnDelete)
+                            .addComponent(btnCancel))
+                        .addGap(14, 14, 14))))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
+     // Retrieve input from text fields
+    String title = txtTitle.getText().trim();
+    String author = txtAuthor.getText().trim();
+    double price;
+    int stock;
+
+    try {
+        // Parse price and stock (ensure they are valid numbers)
+        price = Double.parseDouble(txtPrice.getText().trim());
+        stock = Integer.parseInt(txtStock.getText().trim());
+
+        // Validate input
+        if (title.isEmpty() || author.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Title and Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (price <= 0 || stock < 0) {
+            JOptionPane.showMessageDialog(this, "Price and Stock must be positive numbers!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Create a new Book object
+        Book book = new Book();
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPrice(price);
+        book.setStock(stock);
+
+        // Add the book to the database
+        book.addBook();
+
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Book added successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Clear the input fields
+        txtTitle.setText("");
+        txtAuthor.setText("");
+        txtPrice.setText("");
+        txtStock.setText("");
+
+        // Refresh the table to show the new book
+        loadBooksIntoTable();
+    } catch (NumberFormatException e) {
+        // Handle invalid input (e.g., non-numeric price or stock)
+        JOptionPane.showMessageDialog(this, "Invalid input! Price and Stock must be numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        // Handle other errors (e.g., database errors)
+        JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_btnAddActionPerformed
+
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
+    MainFrame mainForm = new MainFrame(); // Create MainFrame instance
+    mainForm.setVisible(true); // Show MainFrame
+    this.dispose(); // Close bookFrame
+    }//GEN-LAST:event_btnExitActionPerformed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+       // Get the selected row in the table
+    int selectedRow = tbBook.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select a book to edit.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Get the book ID from the selected row
+    int bookId = (int) tbBook.getValueAt(selectedRow, 0);
+
+    // Retrieve input from text fields
+    String title = txtTitle.getText().trim();
+    String author = txtAuthor.getText().trim();
+    double price;
+    int stock;
+
+    try {
+        // Parse price and stock (ensure they are valid numbers)
+        price = Double.parseDouble(txtPrice.getText().trim());
+        stock = Integer.parseInt(txtStock.getText().trim());
+
+        // Validate input
+        if (title.isEmpty() || author.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Title and Author cannot be empty!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (price <= 0 || stock < 0) {
+            JOptionPane.showMessageDialog(this, "Price and Stock must be positive numbers!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Fetch the book from the database
+        Book book = Book.getBookById(bookId);
+        if (book == null) {
+            JOptionPane.showMessageDialog(this, "Book not found!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Update the book details
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPrice(price);
+        book.setStock(stock);
+
+        // Update the book in the database
+        book.updateBook();
+
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Book updated successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Clear the input fields
+        txtTitle.setText("");
+        txtAuthor.setText("");
+        txtPrice.setText("");
+        txtStock.setText("");
+
+        // Refresh the table to show the updated data
+        loadBooksIntoTable();
+    } catch (NumberFormatException e) {
+        // Handle invalid input (e.g., non-numeric price or stock)
+        JOptionPane.showMessageDialog(this, "Invalid input! Price and Stock must be numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception e) {
+        // Handle other errors (e.g., database errors)
+        JOptionPane.showMessageDialog(this, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+         // Get the selected row in the table
+    int selectedRow = tbBook.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Please select a book to delete.", "Error", JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+
+    // Get the book ID from the selected row
+    int bookId = (int) tbBook.getValueAt(selectedRow, 0);
+
+    // Confirm deletion
+    int confirm = JOptionPane.showConfirmDialog(this, "Are you sure you want to delete this book?", "Confirm Delete", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        // Delete the book
+        Book.deleteBook(bookId);
+
+        // Show success message
+        JOptionPane.showMessageDialog(this, "Book deleted successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
+
+        // Refresh the table to reflect the deletion
+        loadBooksIntoTable();
+    }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+         // Deselect any selected row
+    tbBook.clearSelection();
+
+    // Clear all text fields
+    txtTitle.setText("");
+    txtAuthor.setText("");
+    txtPrice.setText("");
+    txtStock.setText("");
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void tbBookMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbBookMouseClicked
+         // Get the selected row index
+    int selectedRow = tbBook.getSelectedRow();
+
+    // Ensure a row is selected
+    if (selectedRow != -1) {
+        // Retrieve data from the selected row and set it to the text fields
+        txtTitle.setText(tbBook.getValueAt(selectedRow, 1).toString());  // Title
+        txtAuthor.setText(tbBook.getValueAt(selectedRow, 2).toString()); // Author
+        txtPrice.setText(tbBook.getValueAt(selectedRow, 3).toString());  // Price
+        txtStock.setText(tbBook.getValueAt(selectedRow, 4).toString());  // Stock
+    }
+    }//GEN-LAST:event_tbBookMouseClicked
 
     /**
      * @param args the command line arguments
@@ -209,11 +473,11 @@ public class bookFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
+    private javax.swing.JButton btnAdd;
+    private javax.swing.JButton btnCancel;
+    private javax.swing.JButton btnDelete;
+    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -223,9 +487,9 @@ public class bookFrame extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tbBook;
     private javax.swing.JTextField txtAuthor;
-    private javax.swing.JTextField txtIdBook;
+    private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtStock;
     private javax.swing.JTextField txtTitle;
     // End of variables declaration//GEN-END:variables
