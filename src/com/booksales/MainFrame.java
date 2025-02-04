@@ -97,6 +97,11 @@ public class MainFrame extends javax.swing.JFrame {
 
         btnSales.setFont(new java.awt.Font("Bahnschrift", 0, 24)); // NOI18N
         btnSales.setText("Data Penjualan");
+        btnSales.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSalesActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -145,6 +150,12 @@ public class MainFrame extends javax.swing.JFrame {
     customerForm.setVisible(true); // Show Customer Frame
     this.setVisible(false); // Hide MainFrame
     }//GEN-LAST:event_btnCustomerActionPerformed
+
+    private void btnSalesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSalesActionPerformed
+        salesFrame salesForm = new salesFrame(); // Create customerFrame instance
+    salesForm.setVisible(true); // Show Customer Frame
+    this.setVisible(false); // Hide MainFrame
+    }//GEN-LAST:event_btnSalesActionPerformed
 
     /**
      * @param args the command line arguments
