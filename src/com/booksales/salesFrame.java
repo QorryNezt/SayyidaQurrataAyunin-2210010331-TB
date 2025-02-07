@@ -9,7 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
 import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
@@ -29,6 +28,58 @@ public class salesFrame extends javax.swing.JFrame {
         loadSalesIntoTable();
     }
 
+    private void calculateTotalPrice() {
+    try {
+        // Get the selected book's price
+        String bookInfo = cbbBook.getSelectedItem().toString();
+        int bookId = Integer.parseInt(bookInfo.split(" - ")[0]); // Extract book ID
+        Book book = Book.getBookById(bookId);
+
+        // Get the quantity
+        int quantity = Integer.parseInt(txtQty.getText().trim());
+
+        // Calculate the total price
+        double totalPrice = book.getPrice() * quantity;
+
+        // Set the total price in the text field
+        txtPrice.setText(String.valueOf(totalPrice));
+    } catch (NumberFormatException ex) {
+        JOptionPane.showMessageDialog(this, "Please enter a valid quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (Exception ex) {
+        JOptionPane.showMessageDialog(this, "An error occurred: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+    
+    
+    private String getCustomerNameById(int customerId) {
+    try (Connection con = DBConnection.getConnection()) {
+        String sql = "SELECT name FROM customers WHERE customer_id = ?";
+        PreparedStatement pst = con.prepareStatement(sql);
+        pst.setInt(1, customerId);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            return rs.getString("name");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error fetching customer name: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    return "";
+}
+
+private String getBookTitleById(int bookId) {
+    try (Connection con = DBConnection.getConnection()) {
+        String sql = "SELECT title FROM books WHERE book_id = ?";
+        PreparedStatement pst = con.prepareStatement(sql);
+        pst.setInt(1, bookId);
+        ResultSet rs = pst.executeQuery();
+        if (rs.next()) {
+            return rs.getString("title");
+        }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Error fetching book title: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    return "";
+}
     
     private void loadSalesIntoTable() {
     try {
@@ -169,7 +220,7 @@ public class salesFrame extends javax.swing.JFrame {
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        dtpSales = new com.toedter.calendar.JDateChooser();
+        txtDate = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -190,7 +241,7 @@ public class salesFrame extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(314, Short.MAX_VALUE)
+                .addContainerGap(333, Short.MAX_VALUE)
                 .addComponent(jLabel1)
                 .addGap(118, 118, 118)
                 .addComponent(btnExit)
@@ -239,7 +290,7 @@ public class salesFrame extends javax.swing.JFrame {
         jLabel5.setText("Total Harga");
 
         jLabel6.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jLabel6.setText("Tanggal Penjualan");
+        jLabel6.setText("Tanggal Penjualan (YYYY-MM-DD)");
 
         cbbCustomer.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         cbbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
@@ -248,7 +299,15 @@ public class salesFrame extends javax.swing.JFrame {
         cbbBook.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
         txtQty.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+        txtQty.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                txtQtyFocusLost(evt);
+            }
+        });
         txtQty.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtQtyKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txtQtyKeyTyped(evt);
             }
@@ -274,24 +333,27 @@ public class salesFrame extends javax.swing.JFrame {
         btnCancel.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         btnCancel.setText("Batal");
 
+        txtDate.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(23, 23, 23)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel2)
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
                     .addComponent(jLabel6)
-                    .addComponent(txtPrice)
-                    .addComponent(txtQty)
-                    .addComponent(cbbBook, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(cbbCustomer, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(dtpSales, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 31, Short.MAX_VALUE)
+                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                        .addComponent(cbbCustomer, javax.swing.GroupLayout.Alignment.LEADING, 0, 157, Short.MAX_VALUE)
+                        .addComponent(cbbBook, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtQty, javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(txtPrice, javax.swing.GroupLayout.Alignment.LEADING))
+                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -303,7 +365,7 @@ public class salesFrame extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnCancel)
                         .addGap(55, 55, 55)))
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -328,16 +390,17 @@ public class salesFrame extends javax.swing.JFrame {
                         .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(btnAdd)
                         .addComponent(btnEdit)
                         .addComponent(btnDelete)
-                        .addComponent(btnCancel)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(dtpSales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(21, Short.MAX_VALUE))
+                        .addComponent(btnCancel))
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel6)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(28, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -359,29 +422,22 @@ public class salesFrame extends javax.swing.JFrame {
         PreparedStatement pst = con.prepareStatement(query);
 
         // Retrieve values from form
-        String customerID = cbbCustomer.getSelectedItem().toString();
-        String bookID = cbbBook.getSelectedItem().toString();
-        int quantity = Integer.parseInt(txtPrice.getText());
-        double totalPrice = Double.parseDouble(txtPrice.getText());
+        String customerInfo = cbbCustomer.getSelectedItem().toString();
+        String bookInfo = cbbBook.getSelectedItem().toString();
+        int quantity = Integer.parseInt(txtQty.getText().trim());
+        double totalPrice = Double.parseDouble(txtPrice.getText().trim());
+        date date_sales = txtDate.getText() ;
 
-        // Get selected date from JDateChooser
-        java.util.Date selectedDate = dtpSales.getDate();
-        if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Please select a date!", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Format date correctly
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String formattedDate = sdf.format(selectedDate);
-        java.sql.Date sqlDate = java.sql.Date.valueOf(formattedDate); 
+        // Extract customer ID and book ID from combo boxes
+        int customerId = Integer.parseInt(customerInfo.split(" - ")[0]);
+        int bookId = Integer.parseInt(bookInfo.split(" - ")[0]);
 
         // Set values to query
-        pst.setString(1, customerID);
-        pst.setString(2, bookID);
+        pst.setInt(1, customerId);
+        pst.setInt(2, bookId);
         pst.setInt(3, quantity);
         pst.setDouble(4, totalPrice);
-        pst.setDate(5, sqlDate);
+        pst.setDate(5, date_sales);
 
         pst.executeUpdate();
         JOptionPane.showMessageDialog(this, "Sales Data Added Successfully!");
@@ -391,41 +447,41 @@ public class salesFrame extends javax.swing.JFrame {
 
         pst.close();
         con.close();
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this, "Please enter valid numbers for quantity and price!", "Error", JOptionPane.ERROR_MESSAGE);
     } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_btnAddActionPerformed
 
     private void txtQtyKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQtyKeyTyped
-         try {
-            // Get the selected book's price
-            String bookInfo = cbbBook.getSelectedItem().toString();
-            int bookId = Integer.parseInt(bookInfo.split("\\(ID: ")[1].replace(")", ""));
-            Book book = Book.getBookById(bookId);
-
-            // Get the quantity
-            int quantity = Integer.parseInt(txtQty.getText().trim());
-
-            // Calculate the total price
-            double totalPrice = book.getPrice() * quantity;
-
-            // Set the total price in the text field
-            txtPrice.setText(String.valueOf(totalPrice));
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid input!", "Error", JOptionPane.ERROR_MESSAGE);
-        }
+                // Code Placeholder (Not Used)
     }//GEN-LAST:event_txtQtyKeyTyped
 
     private void tbSalesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbSalesMouseClicked
             int selectedRow = tbSales.getSelectedRow();
-            if (selectedRow != -1) {
-                // Populate the combo boxes and text fields with the selected sale's data
-                cbbCustomer.setSelectedItem("Customer ID: " + tbSales.getValueAt(selectedRow, 1).toString());
-                cbbBook.setSelectedItem("Book ID: " + tbSales.getValueAt(selectedRow, 2).toString());
-                txtQty.setText(tbSales.getValueAt(selectedRow, 3).toString());
-                txtPrice.setText(tbSales.getValueAt(selectedRow, 4).toString());
-            }
+    if (selectedRow != -1) {
+        // Populate the combo boxes and text fields with the selected sale's data
+        String customerId = tbSales.getValueAt(selectedRow, 1).toString();
+        String customerName = getCustomerNameById(Integer.parseInt(customerId));
+        cbbCustomer.setSelectedItem(customerId + " - " + customerName);
+
+        String bookId = tbSales.getValueAt(selectedRow, 2).toString();
+        String bookTitle = getBookTitleById(Integer.parseInt(bookId));
+        cbbBook.setSelectedItem(bookId + " - " + bookTitle);
+
+        txtQty.setText(tbSales.getValueAt(selectedRow, 3).toString());
+        txtPrice.setText(tbSales.getValueAt(selectedRow, 4).toString());
+    }
     }//GEN-LAST:event_tbSalesMouseClicked
+
+    private void txtQtyFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtQtyFocusLost
+          calculateTotalPrice();
+    }//GEN-LAST:event_txtQtyFocusLost
+
+    private void txtQtyKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQtyKeyPressed
+        calculateTotalPrice();
+    }//GEN-LAST:event_txtQtyKeyPressed
 
     /**
      * @param args the command line arguments
@@ -470,7 +526,6 @@ public class salesFrame extends javax.swing.JFrame {
     private javax.swing.JButton btnExit;
     private javax.swing.JComboBox<String> cbbBook;
     private javax.swing.JComboBox<String> cbbCustomer;
-    private com.toedter.calendar.JDateChooser dtpSales;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -482,6 +537,7 @@ public class salesFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable tbSales;
+    private javax.swing.JTextField txtDate;
     private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtQty;
     // End of variables declaration//GEN-END:variables
