@@ -13,6 +13,7 @@ public class Book {
     private String author;
     private double price;
     private int stock;
+    private date sales_date;
 
     // Constructors
     public Book() {}
@@ -65,18 +66,27 @@ public class Book {
     public void setStock(int stock) {
         this.stock = stock;
     }
+    
+    public int getSaleDate() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
 
     // CRUD Operations
 
     // Create: Add a new book
     public void addBook() {
-        String query = "INSERT INTO books (title, author, price, stock) VALUES (?, ?, ?, ?)";
+        String query = "INSERT INTO books (title, author, price, stock, sales_date) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, this.title);
             stmt.setString(2, this.author);
             stmt.setDouble(3, this.price);
             stmt.setInt(4, this.stock);
+            stmt.setInt(5, this.sales_date);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

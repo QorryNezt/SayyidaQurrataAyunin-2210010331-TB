@@ -101,7 +101,7 @@
                           <Component id="txtQty" alignment="0" max="32767" attributes="0"/>
                           <Component id="txtPrice" alignment="0" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="txtDate" alignment="0" min="-2" pref="155" max="-2" attributes="0"/>
+                      <Component id="dtpSales" alignment="0" min="-2" pref="151" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -156,10 +156,10 @@
                       <Group type="102" attributes="0">
                           <Component id="jLabel6" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="txtDate" min="-2" max="-2" attributes="0"/>
+                          <Component id="dtpSales" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
-                  <EmptySpace pref="28" max="32767" attributes="0"/>
+                  <EmptySpace pref="30" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -320,12 +320,7 @@
             <Property name="text" type="java.lang.String" value="Batal"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JTextField" name="txtDate">
-          <Properties>
-            <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
-              <Font name="Bahnschrift" size="14" style="0"/>
-            </Property>
-          </Properties>
+        <Component class="com.toedter.calendar.JDateChooser" name="dtpSales">
         </Component>
       </SubComponents>
     </Container>

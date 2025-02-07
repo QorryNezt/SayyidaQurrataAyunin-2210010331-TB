@@ -28,6 +28,15 @@ public class salesFrame extends javax.swing.JFrame {
         loadSalesIntoTable();
     }
 
+    // Helper method to clear input fields
+    private void clearInputFields() {
+    cbbCustomer.setSelectedIndex(0);
+    cbbBook.setSelectedIndex(0);
+    txtQty.setText("");
+    txtPrice.setText("");
+    dtpSales.setDate(null);  // Reset the date picker
+}
+    
     private void calculateTotalPrice() {
     try {
         // Get the selected book's price
@@ -220,7 +229,7 @@ private String getBookTitleById(int bookId) {
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        txtDate = new javax.swing.JTextField();
+        dtpSales = new com.toedter.calendar.JDateChooser();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -333,8 +342,6 @@ private String getBookTitleById(int bookId) {
         btnCancel.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         btnCancel.setText("Batal");
 
-        txtDate.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -352,7 +359,7 @@ private String getBookTitleById(int bookId) {
                         .addComponent(cbbBook, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtQty, javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(txtPrice, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(dtpSales, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -399,8 +406,8 @@ private String getBookTitleById(int bookId) {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(28, Short.MAX_VALUE))
+                        .addComponent(dtpSales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -417,7 +424,7 @@ private String getBookTitleById(int bookId) {
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
     try {
-        Connection con = DBConnection.getConnection();  // Ensure you have a connection
+        Connection con = DBConnection.getConnection();
         String query = "INSERT INTO sales (customer_id, book_id, quantity, total_price, sales_date) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement pst = con.prepareStatement(query);
 
@@ -426,29 +433,41 @@ private String getBookTitleById(int bookId) {
         String bookInfo = cbbBook.getSelectedItem().toString();
         int quantity = Integer.parseInt(txtQty.getText().trim());
         double totalPrice = Double.parseDouble(txtPrice.getText().trim());
-        date date_sales = txtDate.getText() ;
 
         // Extract customer ID and book ID from combo boxes
         int customerId = Integer.parseInt(customerInfo.split(" - ")[0]);
         int bookId = Integer.parseInt(bookInfo.split(" - ")[0]);
+
+        // Get selected date from JDateChooser
+        java.util.Date selectedDate = dtpSales.getDate();
+        if (selectedDate == null) {
+            JOptionPane.showMessageDialog(this, "Please select a date!", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Convert java.util.Date to java.sql.Date
+        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
 
         // Set values to query
         pst.setInt(1, customerId);
         pst.setInt(2, bookId);
         pst.setInt(3, quantity);
         pst.setDouble(4, totalPrice);
-        pst.setDate(5, date_sales);
+        pst.setDate(5, sqlDate);  // Use the selected date
 
         pst.executeUpdate();
         JOptionPane.showMessageDialog(this, "Sales Data Added Successfully!");
 
-        // Refresh the table
+        // Refresh the table and clear fields
         loadSalesIntoTable();
+        clearInputFields();
 
         pst.close();
         con.close();
     } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Please enter valid numbers for quantity and price!", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Invalid input! Ensure quantity and price are numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     } catch (Exception e) {
         JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     }
@@ -526,6 +545,7 @@ private String getBookTitleById(int bookId) {
     private javax.swing.JButton btnExit;
     private javax.swing.JComboBox<String> cbbBook;
     private javax.swing.JComboBox<String> cbbCustomer;
+    private com.toedter.calendar.JDateChooser dtpSales;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -537,7 +557,6 @@ private String getBookTitleById(int bookId) {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable tbSales;
-    private javax.swing.JTextField txtDate;
     private javax.swing.JTextField txtPrice;
     private javax.swing.JTextField txtQty;
     // End of variables declaration//GEN-END:variables
