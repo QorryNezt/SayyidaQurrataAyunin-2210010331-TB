@@ -27,6 +27,8 @@ public class Sale {
         this.saleDate = saleDate;
     }
 
+    
+    
     // Getters and Setters
     public int getSaleId() {
         return saleId;
@@ -79,43 +81,33 @@ public class Sale {
     // CRUD Operations
 
     // Create: Add a new sale
-    public void addSale() {
+   public void addSale() {
         String saleQuery = "INSERT INTO sales (customer_id, book_id, quantity, total_price, sale_date) VALUES (?, ?, ?, ?, ?)";
         String updateStockQuery = "UPDATE books SET stock = stock - ? WHERE book_id = ?";
 
         try (Connection conn = DBConnection.getConnection()) {
-            // Start a transaction
-            conn.setAutoCommit(false);
+        conn.setAutoCommit(false);
+    try (PreparedStatement saleStmt = conn.prepareStatement(saleQuery);
+         PreparedStatement updateStockStmt = conn.prepareStatement(updateStockQuery)) {
 
-            // Step 1: Add the sale
-            try (PreparedStatement saleStmt = conn.prepareStatement(saleQuery)) {
-                saleStmt.setInt(1, this.customerId);
-                saleStmt.setInt(2, this.bookId);
-                saleStmt.setInt(3, this.quantity);
-                saleStmt.setDouble(4, this.totalPrice);
-                saleStmt.setString(5, this.saleDate);
-                saleStmt.executeUpdate();
-            }
+        saleStmt.setInt(1, this.customerId);
+        saleStmt.setInt(2, this.bookId);
+        saleStmt.setInt(3, this.quantity);
+        saleStmt.setDouble(4, this.totalPrice);
+        saleStmt.setString(5, this.saleDate);
+        saleStmt.executeUpdate();
 
-            // Step 2: Update the book's stock
-            try (PreparedStatement updateStockStmt = conn.prepareStatement(updateStockQuery)) {
-                updateStockStmt.setInt(1, this.quantity);
-                updateStockStmt.setInt(2, this.bookId);
-                updateStockStmt.executeUpdate();
-            }
+        updateStockStmt.setInt(1, this.quantity);
+        updateStockStmt.setInt(2, this.bookId);
+        updateStockStmt.executeUpdate();
 
-            // Commit the transaction
-            conn.commit();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Rollback the transaction in case of an error
-            try (Connection conn = DBConnection.getConnection()) {
-                conn.rollback();
-            } catch (SQLException ex) {
-                ex.printStackTrace();
-            }
-        }
-        }
+        conn.commit();
+    } catch (SQLException e) {
+        conn.rollback();  // Correct rollback usage
+    }
+} catch (SQLException e) {
+}
+    }
     // Read: Get all sales
     public static List<Sale> getAllSales() {
         List<Sale> sales = new ArrayList<>();
@@ -169,28 +161,20 @@ public class Sale {
         }
     }
     public static String processSale(int customerId, int bookId, int quantity) {
-    // Step 1: Check if there's enough stock
     int currentStock = Book.getStock(bookId);
     if (currentStock < quantity) {
         return "Insufficient stock! Only " + currentStock + " items left.";
     }
 
-    // Step 2: Calculate the total price
     Book book = Book.getBookById(bookId);
     if (book == null) {
         return "Book not found!";
     }
+
     double totalPrice = quantity * book.getPrice();
+    Sale sale = new Sale(0, customerId, bookId, quantity, totalPrice, new java.sql.Date(System.currentTimeMillis()).toString());
 
-    // Step 3: Add the sale and update the stock
-    Sale sale = new Sale();
-    sale.setCustomerId(customerId);
-    sale.setBookId(bookId);
-    sale.setQuantity(quantity);
-    sale.setTotalPrice(totalPrice);
-    sale.setSaleDate(new java.sql.Date(System.currentTimeMillis()).toString()); // Use current date
-    sale.addSale(); // Add the sale and update the stock
-
+    sale.addSale();
     return "Sale completed successfully!";
 }
 }

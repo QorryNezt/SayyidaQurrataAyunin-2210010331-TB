@@ -28,13 +28,11 @@ public class salesFrame extends javax.swing.JFrame {
         loadSalesIntoTable();
     }
 
-    // Helper method to clear input fields
-    private void clearInputFields() {
+private void clearInputFields() {
     cbbCustomer.setSelectedIndex(0);
     cbbBook.setSelectedIndex(0);
     txtQty.setText("");
     txtPrice.setText("");
-    dtpSales.setDate(null);  // Reset the date picker
 }
     
     private void calculateTotalPrice() {
@@ -220,7 +218,6 @@ private String getBookTitleById(int bookId) {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
         cbbCustomer = new javax.swing.JComboBox<>();
         cbbBook = new javax.swing.JComboBox<>();
         txtQty = new javax.swing.JTextField();
@@ -229,7 +226,6 @@ private String getBookTitleById(int bookId) {
         btnEdit = new javax.swing.JButton();
         btnDelete = new javax.swing.JButton();
         btnCancel = new javax.swing.JButton();
-        dtpSales = new com.toedter.calendar.JDateChooser();
         jSeparator1 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -298,9 +294,6 @@ private String getBookTitleById(int bookId) {
         jLabel5.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         jLabel5.setText("Total Harga");
 
-        jLabel6.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
-        jLabel6.setText("Tanggal Penjualan (YYYY-MM-DD)");
-
         cbbCustomer.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         cbbCustomer.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
 
@@ -311,6 +304,11 @@ private String getBookTitleById(int bookId) {
         txtQty.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 txtQtyFocusLost(evt);
+            }
+        });
+        txtQty.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtQtyActionPerformed(evt);
             }
         });
         txtQty.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -335,12 +333,27 @@ private String getBookTitleById(int bookId) {
 
         btnEdit.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         btnEdit.setText("Edit");
+        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditActionPerformed(evt);
+            }
+        });
 
         btnDelete.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         btnDelete.setText("Hapus");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnCancel.setFont(new java.awt.Font("Bahnschrift", 0, 14)); // NOI18N
         btnCancel.setText("Batal");
+        btnCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -353,14 +366,12 @@ private String getBookTitleById(int bookId) {
                     .addComponent(jLabel3)
                     .addComponent(jLabel4)
                     .addComponent(jLabel5)
-                    .addComponent(jLabel6)
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(cbbCustomer, javax.swing.GroupLayout.Alignment.LEADING, 0, 157, Short.MAX_VALUE)
                         .addComponent(cbbBook, javax.swing.GroupLayout.Alignment.LEADING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(txtQty, javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(txtPrice, javax.swing.GroupLayout.Alignment.LEADING))
-                    .addComponent(dtpSales, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtPrice, javax.swing.GroupLayout.Alignment.LEADING)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
@@ -397,17 +408,12 @@ private String getBookTitleById(int bookId) {
                         .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnAdd)
-                        .addComponent(btnEdit)
-                        .addComponent(btnDelete)
-                        .addComponent(btnCancel))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addComponent(jLabel6)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(dtpSales, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(30, Short.MAX_VALUE))
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnAdd)
+                    .addComponent(btnEdit)
+                    .addComponent(btnDelete)
+                    .addComponent(btnCancel))
+                .addContainerGap(51, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_END);
@@ -423,11 +429,7 @@ private String getBookTitleById(int bookId) {
     }//GEN-LAST:event_btnExitActionPerformed
 
     private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
-    try {
-        Connection con = DBConnection.getConnection();
-        String query = "INSERT INTO sales (customer_id, book_id, quantity, total_price, sales_date) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement pst = con.prepareStatement(query);
-
+ try {
         // Retrieve values from form
         String customerInfo = cbbCustomer.getSelectedItem().toString();
         String bookInfo = cbbBook.getSelectedItem().toString();
@@ -438,24 +440,27 @@ private String getBookTitleById(int bookId) {
         int customerId = Integer.parseInt(customerInfo.split(" - ")[0]);
         int bookId = Integer.parseInt(bookInfo.split(" - ")[0]);
 
-        // Get selected date from JDateChooser
-        java.util.Date selectedDate = dtpSales.getDate();
-        if (selectedDate == null) {
-            JOptionPane.showMessageDialog(this, "Please select a date!", "Error", JOptionPane.ERROR_MESSAGE);
+        // Check if the requested quantity is available in stock
+        int currentStock = getBookStock(String.valueOf(bookId));
+        if (quantity > currentStock) {
+            JOptionPane.showMessageDialog(this, "Not enough stock available!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Convert java.util.Date to java.sql.Date
-        java.sql.Date sqlDate = new java.sql.Date(selectedDate.getTime());
+        // Insert the sale record into the database
+        Connection con = DBConnection.getConnection();
+        String query = "INSERT INTO sales (customer_id, book_id, quantity, total_price, sale_date) VALUES (?, ?, ?, ?, NOW())";
+        PreparedStatement pst = con.prepareStatement(query);
 
-        // Set values to query
         pst.setInt(1, customerId);
         pst.setInt(2, bookId);
         pst.setInt(3, quantity);
         pst.setDouble(4, totalPrice);
-        pst.setDate(5, sqlDate);  // Use the selected date
-
         pst.executeUpdate();
+
+        // Reduce the stock of the sold book
+        updateBookStock(String.valueOf(bookId), quantity);
+
         JOptionPane.showMessageDialog(this, "Sales Data Added Successfully!");
 
         // Refresh the table and clear fields
@@ -464,8 +469,7 @@ private String getBookTitleById(int bookId) {
 
         pst.close();
         con.close();
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Invalid input! Ensure quantity and price are numbers.", "Error", JOptionPane.ERROR_MESSAGE);
+        
     } catch (SQLException e) {
         JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
     } catch (Exception e) {
@@ -478,19 +482,19 @@ private String getBookTitleById(int bookId) {
     }//GEN-LAST:event_txtQtyKeyTyped
 
     private void tbSalesMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tbSalesMouseClicked
-            int selectedRow = tbSales.getSelectedRow();
-    if (selectedRow != -1) {
+       int selectedRow = tbSales.getSelectedRow();
+    if (selectedRow != -1) { // Ensure a row is selected
         // Populate the combo boxes and text fields with the selected sale's data
-        String customerId = tbSales.getValueAt(selectedRow, 1).toString();
-        String customerName = getCustomerNameById(Integer.parseInt(customerId));
-        cbbCustomer.setSelectedItem(customerId + " - " + customerName);
+        String customerId = tbSales.getValueAt(selectedRow, 1).toString(); // Customer ID
+        String customerName = getCustomerNameById(Integer.parseInt(customerId)); // Customer Name
+        cbbCustomer.setSelectedItem(customerId + " - " + customerName); // Set customer combo box
 
-        String bookId = tbSales.getValueAt(selectedRow, 2).toString();
-        String bookTitle = getBookTitleById(Integer.parseInt(bookId));
-        cbbBook.setSelectedItem(bookId + " - " + bookTitle);
+        String bookId = tbSales.getValueAt(selectedRow, 2).toString(); // Book ID
+        String bookTitle = getBookTitleById(Integer.parseInt(bookId)); // Book Title
+        cbbBook.setSelectedItem(bookId + " - " + bookTitle); // Set book combo box
 
-        txtQty.setText(tbSales.getValueAt(selectedRow, 3).toString());
-        txtPrice.setText(tbSales.getValueAt(selectedRow, 4).toString());
+        txtQty.setText(tbSales.getValueAt(selectedRow, 3).toString()); // Quantity
+        txtPrice.setText(tbSales.getValueAt(selectedRow, 4).toString()); // Total Price
     }
     }//GEN-LAST:event_tbSalesMouseClicked
 
@@ -499,8 +503,91 @@ private String getBookTitleById(int bookId) {
     }//GEN-LAST:event_txtQtyFocusLost
 
     private void txtQtyKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtQtyKeyPressed
-        calculateTotalPrice();
+        
     }//GEN-LAST:event_txtQtyKeyPressed
+
+    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+        int selectedRow = tbSales.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin diedit!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int saleId = Integer.parseInt(tbSales.getValueAt(selectedRow, 0).toString());
+    int customerId = ((Customer) cbbCustomer.getSelectedItem()).getCustomerId();
+    int bookId = ((Book) cbbBook.getSelectedItem()).getBookId();
+    int quantity = Integer.parseInt(txtQty.getText());
+    double totalPrice = Double.parseDouble(txtPrice.getText());
+
+    String query = "UPDATE sales SET customer_id=?, book_id=?, quantity=?, total_price=? WHERE sale_id=?";
+
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, customerId);
+        stmt.setInt(2, bookId);
+        stmt.setInt(3, quantity);
+        stmt.setDouble(4, totalPrice);
+        stmt.setInt(5, saleId);
+        stmt.executeUpdate();
+
+        JOptionPane.showMessageDialog(this, "Data berhasil diperbarui!");
+        loadSalesIntoTable(); // Refresh table
+        
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal mengedit data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_btnEditActionPerformed
+
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteActionPerformed
+         int selectedRow = tbSales.getSelectedRow();
+    if (selectedRow == -1) {
+        JOptionPane.showMessageDialog(this, "Pilih data yang ingin dihapus!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int saleId = Integer.parseInt(tbSales.getValueAt(selectedRow, 0).toString());
+    int bookId = Integer.parseInt(tbSales.getValueAt(selectedRow, 2).toString());
+    int quantity = Integer.parseInt(tbSales.getValueAt(selectedRow, 3).toString());
+
+    int confirm = JOptionPane.showConfirmDialog(this, "Apakah Anda yakin ingin menghapus data ini?", "Konfirmasi", JOptionPane.YES_NO_OPTION);
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    try (Connection conn = DBConnection.getConnection()) {
+        conn.setAutoCommit(false);
+
+        // Delete sale record
+        String deleteQuery = "DELETE FROM sales WHERE sale_id=?";
+        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteQuery)) {
+            deleteStmt.setInt(1, saleId);
+            deleteStmt.executeUpdate();
+        }
+
+        // Restore stock
+        String updateStockQuery = "UPDATE books SET stock = stock + ? WHERE book_id=?";
+        try (PreparedStatement updateStmt = conn.prepareStatement(updateStockQuery)) {
+            updateStmt.setInt(1, quantity);
+            updateStmt.setInt(2, bookId);
+            updateStmt.executeUpdate();
+        }
+
+        conn.commit();
+        JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+        loadSalesIntoTable(); // Refresh table
+        
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this, "Gagal menghapus data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_btnDeleteActionPerformed
+
+    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+        clearInputFields();
+    }//GEN-LAST:event_btnCancelActionPerformed
+
+    private void txtQtyActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtQtyActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtQtyActionPerformed
 
     /**
      * @param args the command line arguments
@@ -545,13 +632,11 @@ private String getBookTitleById(int bookId) {
     private javax.swing.JButton btnExit;
     private javax.swing.JComboBox<String> cbbBook;
     private javax.swing.JComboBox<String> cbbCustomer;
-    private com.toedter.calendar.JDateChooser dtpSales;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;

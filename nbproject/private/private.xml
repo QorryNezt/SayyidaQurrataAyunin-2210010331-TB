@@ -4,8 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/Asus/Documents/NetBeansProjects/pboUas/src/com/booksales/salesFrame.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/pboUas/src/com/booksales/MainFrame.java</file>
-            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/pboUas/src/com/booksales/bookFrame.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/pboUas/src/com/booksales/Book.java</file>
+            <file>file:/C:/Users/Asus/Documents/NetBeansProjects/pboUas/src/com/booksales/Sale.java</file>
         </group>
     </open-files>
 </project-private>

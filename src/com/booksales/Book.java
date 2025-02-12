@@ -13,7 +13,6 @@ public class Book {
     private String author;
     private double price;
     private int stock;
-    private date sales_date;
 
     // Constructors
     public Book() {}
@@ -26,6 +25,23 @@ public class Book {
         this.stock = stock;
     }
 
+    public static void decreaseStock(int bookId, int quantity) {
+    String query = "UPDATE books SET stock = stock - ? WHERE book_id = ? AND stock >= ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, quantity);
+        stmt.setInt(2, bookId);
+        stmt.setInt(3, quantity); // Ensure stock does not go negative
+        int rowsAffected = stmt.executeUpdate();
+        
+        if (rowsAffected == 0) {
+            System.out.println("Not enough stock available for book ID: " + bookId);
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+}
+    
     // Getters and Setters
     public int getBookId() {
         return bookId;
@@ -66,27 +82,18 @@ public class Book {
     public void setStock(int stock) {
         this.stock = stock;
     }
-    
-    public int getSaleDate() {
-        return stock;
-    }
-
-    public void setStock(int stock) {
-        this.stock = stock;
-    }
 
     // CRUD Operations
 
     // Create: Add a new book
     public void addBook() {
-        String query = "INSERT INTO books (title, author, price, stock, sales_date) VALUES (?, ?, ?, ?, ?)";
+        String query = "INSERT INTO books (title, author, price, stock) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setString(1, this.title);
             stmt.setString(2, this.author);
             stmt.setDouble(3, this.price);
             stmt.setInt(4, this.stock);
-            stmt.setInt(5, this.sales_date);
             stmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -94,52 +101,69 @@ public class Book {
     }
 
     // Read: Get all books
-    // In Book.java
-   public static List<Book> getAllBooks() {
-    List<Book> books = new ArrayList<>();
-    String query = "SELECT * FROM books";
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query);
-         ResultSet rs = stmt.executeQuery()) {
-        while (rs.next()) {
-            Book book = new Book(
-                rs.getInt("book_id"),
-                rs.getString("title"),
-                rs.getString("author"),
-                rs.getDouble("price"),
-                rs.getInt("stock")
-            );
-            books.add(book);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return books;
-}
-
-    // Read: Get a single book by ID
-    public static Book getBookById(int bookId) {
-        Book book = null;
-        String query = "SELECT * FROM books WHERE book_id = ?";
+    public static List<Book> getAllBooks() {
+        List<Book> books = new ArrayList<>();
+        String query = "SELECT * FROM books";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-            stmt.setInt(1, bookId);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    book = new Book(
-                        rs.getInt("book_id"),
-                        rs.getString("title"),
-                        rs.getString("author"),
-                        rs.getDouble("price"),
-                        rs.getInt("stock")
-                    );
-                }
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Book book = new Book(
+                    rs.getInt("book_id"),
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getDouble("price"),
+                    rs.getInt("stock")
+                );
+                books.add(book);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return book;
+        return books;
     }
+
+    // Read: Get a single book by ID
+    // In Book.java
+public static int getStock(int bookId) {
+    int stock = 0;
+    String query = "SELECT stock FROM books WHERE book_id = ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, bookId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                stock = rs.getInt("stock");
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return stock;
+}
+
+public static Book getBookById(int bookId) {
+    Book book = null;
+    String query = "SELECT * FROM books WHERE book_id = ?";
+    try (Connection conn = DBConnection.getConnection();
+         PreparedStatement stmt = conn.prepareStatement(query)) {
+        stmt.setInt(1, bookId);
+        try (ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                book = new Book(
+                    rs.getInt("book_id"),
+                    rs.getString("title"),
+                    rs.getString("author"),
+                    rs.getDouble("price"),
+                    rs.getInt("stock")
+                );
+            }
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    return book;
+}
 
     // Update: Update an existing book
     public void updateBook() {
@@ -157,23 +181,6 @@ public class Book {
         }
     }
 
-    public static int getStock(int bookId) {
-    int stock = 0;
-    String query = "SELECT stock FROM books WHERE book_id = ?";
-    try (Connection conn = DBConnection.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(query)) {
-        stmt.setInt(1, bookId);
-        try (ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                stock = rs.getInt("stock");
-            }
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return stock;
-}
-    
     // Delete: Delete a book by ID
     public static void deleteBook(int bookId) {
         String query = "DELETE FROM books WHERE book_id = ?";
