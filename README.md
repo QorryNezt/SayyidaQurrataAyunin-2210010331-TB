@@ -3,7 +3,6 @@
 
 ### 📖External Library Requirements:📖
 1. JCalendar
-<br>
 ### 🎞Demo Video🎞<br>
 [**📺Click Here📺**](https://youtu.be/KYDb_q8KWx0)<br><br>
 ----
